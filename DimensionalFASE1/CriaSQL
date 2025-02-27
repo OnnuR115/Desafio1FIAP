@@ -1,0 +1,189 @@
+-- Gerado por Oracle SQL Developer Data Modeler 23.1.0.087.0806
+--   em:        2025-02-24 17:37:52 BRT
+--   site:      Oracle Database 21c
+--   tipo:      Oracle Database 21c
+
+
+-- predefined type, no DDL - MDSYS.SDO_GEOMETRY
+
+-- predefined type, no DDL - XMLTYPE
+
+CREATE TABLE dim_categoria (
+    sk_categoria             NUMBER(8) NOT NULL,
+    nm_categoria             VARCHAR2(20 BYTE) NOT NULL,
+    ds_categoria             VARCHAR2(70 BYTE) NOT NULL,
+    seg_categoria            VARCHAR2(15 BYTE) NOT NULL,
+    nm_subcategoria          VARCHAR2(15 BYTE) NOT NULL,
+    prioridade_abastecimento VARCHAR2(10 BYTE) NOT NULL
+);
+
+ALTER TABLE dim_categoria ADD CONSTRAINT dim_categoria_pk PRIMARY KEY ( sk_categoria );
+
+CREATE TABLE dim_ct_distribuicao (
+    sk_loja                  NUMBER(10) NOT NULL,
+    bairro                   VARCHAR2(30 BYTE) NOT NULL,
+    dt_inauguracao           DATE NOT NULL,
+    capacidade_armazenamento NUMBER NOT NULL,
+    nm_bairro                VARCHAR2(20 BYTE) NOT NULL,
+    nm_cidade                VARCHAR2(20 BYTE) NOT NULL,
+    nm_estado                VARCHAR2(20) NOT NULL,
+    nm_loja                  VARCHAR2(20 BYTE) NOT NULL
+);
+
+ALTER TABLE dim_ct_distribuicao ADD CONSTRAINT dim_ct_distribuicao_pk PRIMARY KEY ( sk_loja );
+
+CREATE TABLE dim_endereço (
+    sk_endereco NUMBER(10) NOT NULL,
+    nm_bairro   VARCHAR2(30 BYTE) NOT NULL,
+    nm_cidade   CHAR(30 BYTE) NOT NULL,
+    nm_estado   VARCHAR2(40 BYTE) NOT NULL,
+    sg_estado   CHAR(2 BYTE) NOT NULL
+);
+
+ALTER TABLE dim_endereço ADD CONSTRAINT dim_endereço_pk PRIMARY KEY ( sk_endereco );
+
+CREATE TABLE dim_fornecedor (
+    sk_fornecedor  NUMBER(6) NOT NULL,
+    nm_fornecedor  VARCHAR2(50) NOT NULL,
+    id_entrega     NUMBER(8) NOT NULL,
+    tempo_entrega  DATE NOT NULL,
+    confiabilidade CHAR(2 BYTE) NOT NULL,
+    nm_estado      VARCHAR2(40 BYTE) NOT NULL,
+    nm_cidade      VARCHAR2(30 BYTE) NOT NULL,
+    nm_bairro      VARCHAR2(30 BYTE) NOT NULL,
+    sg_estado      CHAR(2 BYTE) NOT NULL
+);
+
+ALTER TABLE dim_fornecedor ADD CONSTRAINT dim_fornecedor_pk PRIMARY KEY ( sk_fornecedor );
+
+CREATE TABLE dim_produto (
+    sk_produto      NUMBER(10) NOT NULL,
+    ds_produto      VARCHAR2(90 BYTE) NOT NULL,
+    marca_produto   VARCHAR2(15 BYTE) NOT NULL,
+    vl_produto      NUMBER(8, 2) NOT NULL,
+    nm_produto      VARCHAR2(30 BYTE) NOT NULL,
+    cor_produto     CHAR(5) NOT NULL,
+    dim_fis_produto VARCHAR2(10 BYTE) NOT NULL
+);
+
+ALTER TABLE dim_produto ADD CONSTRAINT dim_produto_pk PRIMARY KEY ( sk_produto );
+
+CREATE TABLE dim_promocao (
+    sk_promocao NUMBER(10) NOT NULL,
+    ds_promocao VARCHAR2(90 BYTE) NOT NULL,
+    dt_inicio   DATE NOT NULL,
+    dt_termino  DATE NOT NULL,
+    st_promocao CHAR(4 BYTE) NOT NULL
+);
+
+ALTER TABLE dim_promocao ADD CONSTRAINT dim_promocao_pk PRIMARY KEY ( sk_promocao );
+
+CREATE TABLE dim_tempo (
+    sk_tempo   NUMBER NOT NULL,
+    dia        DATE NOT NULL,
+    mes        DATE NOT NULL,
+    ano        DATE NOT NULL,
+    semestre   VARCHAR2(2 BYTE) NOT NULL,
+    trimestre  VARCHAR2(2 BYTE) NOT NULL,
+    dia_semena VARCHAR2(12) NOT NULL,
+    horário    DATE NOT NULL,
+    feriado    VARCHAR2(30) NOT NULL
+);
+
+ALTER TABLE dim_tempo ADD CONSTRAINT dim_tempo_pk PRIMARY KEY ( sk_tempo );
+
+CREATE TABLE fto_estoque (
+    sk_produto    NUMBER(10) NOT NULL,
+    sk_loja       NUMBER(10) NOT NULL,
+    sk_tempo      NUMBER NOT NULL,
+    sk_fornecedor NUMBER(6) NOT NULL,
+    sk_endereco   NUMBER(10) NOT NULL,
+    sk_promocao   NUMBER(10) NOT NULL,
+    sk_categoria  NUMBER(8) NOT NULL,
+    st_estoque    CHAR(1 BYTE) NOT NULL,
+    qtd_minima    NUMBER(10) NOT NULL,
+    rotatividade  VARCHAR2(10 BYTE) NOT NULL,
+    qtd_produto   NUMBER(10) NOT NULL
+);
+
+ALTER TABLE fto_estoque
+    ADD CONSTRAINT fto_estoque_pk PRIMARY KEY ( sk_produto,
+                                                sk_loja,
+                                                sk_fornecedor,
+                                                sk_tempo,
+                                                sk_endereco,
+                                                sk_promocao,
+                                                sk_categoria );
+
+ALTER TABLE fto_estoque
+    ADD CONSTRAINT relation_2 FOREIGN KEY ( sk_produto )
+        REFERENCES dim_produto ( sk_produto );
+
+ALTER TABLE fto_estoque
+    ADD CONSTRAINT relation_3 FOREIGN KEY ( sk_loja )
+        REFERENCES dim_ct_distribuicao ( sk_loja );
+
+ALTER TABLE fto_estoque
+    ADD CONSTRAINT relation_4 FOREIGN KEY ( sk_fornecedor )
+        REFERENCES dim_fornecedor ( sk_fornecedor );
+
+ALTER TABLE fto_estoque
+    ADD CONSTRAINT relation_5 FOREIGN KEY ( sk_tempo )
+        REFERENCES dim_tempo ( sk_tempo );
+
+ALTER TABLE fto_estoque
+    ADD CONSTRAINT relation_6 FOREIGN KEY ( sk_endereco )
+        REFERENCES dim_endereço ( sk_endereco );
+
+ALTER TABLE fto_estoque
+    ADD CONSTRAINT relation_7 FOREIGN KEY ( sk_promocao )
+        REFERENCES dim_promocao ( sk_promocao );
+
+ALTER TABLE fto_estoque
+    ADD CONSTRAINT relation_8 FOREIGN KEY ( sk_categoria )
+        REFERENCES dim_categoria ( sk_categoria );
+
+
+
+-- Relatório do Resumo do Oracle SQL Developer Data Modeler: 
+-- 
+-- CREATE TABLE                             8
+-- CREATE INDEX                             0
+-- ALTER TABLE                             15
+-- CREATE VIEW                              0
+-- ALTER VIEW                               0
+-- CREATE PACKAGE                           0
+-- CREATE PACKAGE BODY                      0
+-- CREATE PROCEDURE                         0
+-- CREATE FUNCTION                          0
+-- CREATE TRIGGER                           0
+-- ALTER TRIGGER                            0
+-- CREATE COLLECTION TYPE                   0
+-- CREATE STRUCTURED TYPE                   0
+-- CREATE STRUCTURED TYPE BODY              0
+-- CREATE CLUSTER                           0
+-- CREATE CONTEXT                           0
+-- CREATE DATABASE                          0
+-- CREATE DIMENSION                         0
+-- CREATE DIRECTORY                         0
+-- CREATE DISK GROUP                        0
+-- CREATE ROLE                              0
+-- CREATE ROLLBACK SEGMENT                  0
+-- CREATE SEQUENCE                          0
+-- CREATE MATERIALIZED VIEW                 0
+-- CREATE MATERIALIZED VIEW LOG             0
+-- CREATE SYNONYM                           0
+-- CREATE TABLESPACE                        0
+-- CREATE USER                              0
+-- 
+-- DROP TABLESPACE                          0
+-- DROP DATABASE                            0
+-- 
+-- REDACTION POLICY                         0
+-- 
+-- ORDS DROP SCHEMA                         0
+-- ORDS ENABLE SCHEMA                       0
+-- ORDS ENABLE OBJECT                       0
+-- 
+-- ERRORS                                   0
+-- WARNINGS                                 0
